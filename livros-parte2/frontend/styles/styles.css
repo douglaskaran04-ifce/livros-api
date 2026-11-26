@@ -1,0 +1,117 @@
+:root {
+  --bg: #0f0f1a;
+  --card: #1a1a2e;
+  --borda: #2c2c4a;
+  --texto: #e6e6f0;
+  --suave: #9a9ab5;
+  --destaque: #4455cc;
+  --perigo: #cc4455;
+  --ok: #2f9e6f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+h1 { margin-top: 0; }
+h2 { margin-top: 0; font-size: 1.15rem; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin: 12px 0 4px;
+  color: var(--suave);
+  font-size: 0.9rem;
+}
+
+input, select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  background: var(--bg);
+  color: var(--texto);
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+/* Remove o visual nativo do select e desenha a seta */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%239a9ab5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+input:focus, select:focus {
+  outline: 2px solid var(--destaque);
+  border-color: var(--destaque);
+}
+
+button {
+  padding: 10px 16px;
+  background: var(--destaque);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+button:hover { filter: brightness(1.15); }
+button.secundario { background: transparent; border: 1px solid var(--borda); color: var(--texto); }
+button.perigo { background: var(--perigo); }
+button.pequeno { padding: 6px 10px; font-size: 0.85rem; }
+
+.acoes { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+.filtros {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 600px) {
+  .filtros { grid-template-columns: 2fr 1fr; }
+}
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--borda); }
+th { color: var(--suave); font-weight: 600; font-size: 0.85rem; }
+td.acoes-celula { white-space: nowrap; }
+td.acoes-celula button { margin-right: 6px; }
+
+.vazio { color: var(--suave); text-align: center; margin: 16px 0 0; }
+
+.mensagem {
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid var(--borda);
+}
+.mensagem.erro { background: #3a1f28; border-color: var(--perigo); }
+.mensagem.sucesso { background: #1b3a30; border-color: var(--ok); }
