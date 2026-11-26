@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livros</title>
+  <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Livros</h1>
+
+    <p id="mensagem" class="mensagem" hidden></p>
+
+    <section class="card">
+      <h2 id="titulo-form">Novo livro</h2>
+      <form id="form-livro">
+        <input type="hidden" id="livro-id">
+
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" required>
+
+        <label for="ano">Ano de publicação</label>
+        <input type="number" id="ano" min="1000" step="1" required>
+
+        <label for="autor">Autor</label>
+        <select id="autor" required></select>
+
+        <div class="acoes">
+          <button type="submit" id="btn-salvar">Cadastrar</button>
+          <button type="button" id="btn-cancelar" class="secundario" hidden>Cancelar edição</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Lista</h2>
+      <div class="filtros">
+        <input type="text" id="filtro-titulo" placeholder="Buscar por título">
+        <select id="filtro-autor">
+          <option value="">Todos os autores</option>
+        </select>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Ano</th>
+            <th>Autor</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+      </table>
+      <p id="vazio" class="vazio" hidden>Nenhum livro encontrado.</p>
+    </section>
+  </main>
+
+  <script src="scripts/app.js"></script>
+</body>
+</html>

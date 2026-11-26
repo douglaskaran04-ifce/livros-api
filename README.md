@@ -1,6 +1,6 @@
-# 📚 Biblioteca Pessoal — API REST de Livros com Express (Parte 1)
+# 📚 Biblioteca Pessoal — API REST de Livros com SQLite, MVC e CORS (Parte 2)
 
-API RESTful completa com operações **CRUD** (*Create, Read, Update, Delete*) desenvolvida em **Node.js** e **Express**, acompanhada de uma interface web responsiva em tema escuro (*Dark Mode*) que consome os endpoints via **Fetch API**.
+API RESTful completa com operações **CRUD** (*Create, Read, Update, Delete*) desenvolvida em **Node.js** e **Express**, estruturada no padrão arquitetural **MVC** (*Models, Controllers, Routes*), com persistência relacional em **SQLite** (`better-sqlite3`) e comunicação entre origens distintas habilitada via **CORS** para consumo por uma interface web responsiva.
 
 Projeto desenvolvido como atividade prática da disciplina de **Desenvolvimento Web 2** (Curso Técnico em Informática para Internet — IFCE Campus Maranguape).
 
@@ -8,38 +8,53 @@ Projeto desenvolvido como atividade prática da disciplina de **Desenvolvimento 
 
 ## 🚀 Funcionalidades
 
-- **Listagem de livros** com suporte a filtro opcional por status de leitura (`?lido=true` ou `?lido=false`).
-- **Consulta individual** de livro por identificador numérico (`ID`).
-- **Cadastro de novos livros** com geração automática de `ID` sequencial e validação rigorosa de tipos no back-end.
-- **Atualização completa (`PUT`)** substituindo todos os atributos do registro.
-- **Atualização parcial (`PATCH`)** permitindo alterar campos específicos (ex.: marcar/desmarcar livro como lido).
-- **Exclusão de registros (`DELETE`)** com retorno HTTP padronizado (`204 No Content`).
-- **Front-end integrado** servido estaticamente pelo próprio Express, com proteção contra injeção de HTML (*XSS*).
+- **Persistência relacional em SQLite:** Duas tabelas (`autores` e `livros`) conectadas por chave estrangeira (`FOREIGN KEY`) com integridade referencial ativa (`PRAGMA foreign_keys = ON`) e modo `WAL`.
+- **Povoamento inicial (`Seed`):** Script automatizado (`npm run seed`) para popular o banco com 5 autores clássicos e 12 obras literárias sem duplicidade (`INSERT OR IGNORE`).
+- **Listagem de livros com `INNER JOIN` e filtros dinâmicos:** Retorna o nome do autor junto aos dados do livro e suporta filtros combináveis por query string (`?autor=3&titulo=dom`).
+- **Listagem de autores:** Endpoint dedicado (`GET /autores`) para carregar opções de seleção e validar relacionamentos.
+- **Consulta individual (`GET /livros/:id`):** Busca de registro por `ID` com validação de parâmetro numérico (`400 Bad Request` para IDs inválidos e `404 Not Found` para registros inexistentes).
+- **Cadastro (`POST /livros`) e Atualização (`PUT /livros/:id`):** Validação rigorosa de tipos no controller, verificação de existência do autor, tratamento de conflitos de título único (`409 Conflict`) e retorno do cabeçalho `Location` na criação (`201 Created`).
+- **Exclusão de registros (`DELETE /livros/:id`):** Remoção persistente com retorno HTTP padronizado (`204 No Content`).
+- **Front-end desacoplado com CORS:** Interface web servida separadamente via **Live Server** (porta `5500`) consumindo a API (porta `3000`) via **Fetch API**.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Back-end:** Node.js, Express
-- **Front-end:** HTML5, CSS3 (Flexbox & Dark Mode), JavaScript (ES6+, `fetch`, `async/await`)
-- **Persistência (Parte 1):** Armazenamento em memória (array JavaScript)
+- **Back-end:** Node.js, Express (`express.Router`), `cors`
+- **Banco de Dados:** SQLite com `better-sqlite3` (consultas parametrizadas com `?` contra *SQL Injection*)
+- **Front-end:** HTML5, CSS3, JavaScript (ES6+, `fetch`, `async/await`)
+- **Ferramentas de Desenvolvimento:** `nodemon`, Live Server (VS Code), Thunder Client
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ```text
-livros-api/
+livros-parte2/
 ├── backend/
-│   └── server.js          # Servidor Express, middlewares, validações e rotas REST
-├── frontend/
-│   ├── index.html         # Estrutura semântica da interface
-│   ├── scripts/
-│   │   └── app.js         # Consumo da API via Fetch e manipulação do DOM
-│   └── styles/
-│       └── styles.css     # Estilização em tema escuro
-├── package.json
-└── package-lock.json
+│   ├── controllers/
+│   │   ├── autores-controller.js  # Regras HTTP e respostas dos autores
+│   │   └── livros-controller.js   # Validações, tratamento de erros e respostas HTTP dos livros
+│   ├── data/
+│   │   └── livros.sqlite          # Banco de dados SQLite (gerado automaticamente, ignorado no Git)
+│   ├── models/
+│   │   ├── autor-model.js         # Consultas SQL da tabela autores
+│   │   └── livro-model.js         # Consultas SQL (JOIN, filtros e CRUD) da tabela livros
+│   ├── routes/
+│   │   ├── autores-routes.js      # Definição das rotas de /autores
+│   │   └── livros-routes.js       # Definição das rotas de /livros
+│   ├── .gitignore                 # Ignora node_modules/ e data/
+│   ├── db.js                      # Conexão SQLite, PRAGMAs, DDL das tabelas e autores iniciais
+│   ├── package.json               # Dependências e scripts (start, dev, seed)
+│   ├── seed.js                    # Script para popular o banco com livros iniciais
+│   └── server.js                  # Configuração do Express, CORS, middlewares e registro de routers
+└── frontend/
+    ├── index.html                 # Estrutura semântica da interface
+    ├── scripts/
+    │   └── app.js                 # Consumo da API (http://localhost:3000) via Fetch
+    └── styles/
+        └── styles.css             # Estilização da aplicação
 ```
 
 ---
@@ -48,13 +63,14 @@ livros-api/
 
 ### Pré-requisitos
 - [Node.js](https://nodejs.org/) instalado (versão 18 ou superior recomendada).
+- Extensão **Live Server** no VS Code para servir o front-end.
 
 ### Passo a passo
 
-1. **Clone este repositório:**
+1. **Clone este repositório e acesse a pasta do back-end:**
    ```bash
-   git clone https://github.com/seu-usuario/livros-api.git
-   cd livros-api
+   git clone https://github.com/seu-usuario/livros-parte2.git
+   cd livros-parte2/backend
    ```
 
 2. **Instale as dependências:**
@@ -62,17 +78,21 @@ livros-api/
    npm install
    ```
 
-3. **Inicie o servidor:**
+3. **Popule o banco de dados com os registros iniciais:**
    ```bash
-   node backend/server.js
+   npm run seed
    ```
-   *(Opcional — modo desenvolvimento com reinicialização automática)*:
-   ```bash
-   npx nodemon backend/server.js
-   ```
+   *(Este comando cria automaticamente a pasta `data/`, o arquivo `livros.sqlite`, os 5 autores e os 12 livros iniciais).*
 
-4. **Acesse a aplicação:**
-   Abra o navegador em [`http://localhost:3000`](http://localhost:3000).
+4. **Inicie o servidor da API:**
+   ```bash
+   npm run dev
+   ```
+   *(Ou `npm start` para execução padrão sem nodemon).* A API estará disponível em [`http://localhost:3000`](http://localhost:3000).
+
+5. **Inicie o front-end:**
+   - Abra a pasta `livros-parte2` no VS Code.
+   - Clique com o botão direito em `frontend/index.html` e selecione **Open with Live Server** (geralmente aberto em `http://127.0.0.1:5500` ou `http://localhost:5500`).
 
 ---
 
@@ -80,32 +100,42 @@ livros-api/
 
 | Método | Rota | Descrição | Corpo da Requisição (JSON) | Status de Sucesso |
 | :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/livros` | Lista todos os livros (aceita `?lido=true` ou `?lido=false`) | — | `200 OK` |
+| `GET` | `/autores` | Lista todos os autores ordenados por nome | — | `200 OK` |
+| `GET` | `/livros` | Lista todos os livros com nome do autor (aceita `?autor=ID` e `?titulo=TEXTO`) | — | `200 OK` |
 | `GET` | `/livros/:id` | Retorna um livro específico pelo `ID` | — | `200 OK` |
-| `POST` | `/livros` | Cadastra um novo livro | `{ "titulo", "autor", "ano", "lido"? }` | `201 Created` |
-| `PUT` | `/livros/:id` | Substitui todos os dados de um livro existente | `{ "titulo", "autor", "ano", "lido"? }` | `200 OK` |
-| `PATCH` | `/livros/:id` | Atualiza apenas os campos enviados | `{ "lido": true }` (exemplo) | `200 OK` |
-| `DELETE` | `/livros/:id` | Remove um livro do acervo | — | `204 No Content` |
+| `POST` | `/livros` | Cadastra um novo livro (retorna cabeçalho `Location`) | `{ "titulo", "ano", "autor_id" }` | `201 Created` |
+| `PUT` | `/livros/:id` | Atualiza todos os dados de um livro existente | `{ "titulo", "ano", "autor_id" }` | `200 OK` |
+| `DELETE` | `/livros/:id` | Remove um livro do banco de dados | — | `204 No Content` |
 
 ### Exemplos de Requisições (`curl` / Thunder Client)
+
+#### Listar autores (`GET /autores`)
+```bash
+curl http://localhost:3000/autores
+```
+
+#### Filtrar livros por autor e título (`GET /livros?autor=2&titulo=hora`)
+```bash
+curl "http://localhost:3000/livros?autor=2&titulo=hora"
+```
 
 #### Cadastrar um livro (`POST /livros`)
 ```bash
 curl -X POST http://localhost:3000/livros \
   -H "Content-Type: application/json" \
-  -d '{"titulo": "Vidas Secas", "autor": "Graciliano Ramos", "ano": 1938}'
+  -d '{"titulo": "Esaú e Jacó", "ano": 1904, "autor_id": 1}'
 ```
 
-#### Marcar livro como lido (`PATCH /livros/2`)
+#### Atualizar um livro (`PUT /livros/13`)
 ```bash
-curl -X PATCH http://localhost:3000/livros/2 \
+curl -X PUT http://localhost:3000/livros/13 \
   -H "Content-Type: application/json" \
-  -d '{"lido": true}'
+  -d '{"titulo": "Esaú e Jacó", "ano": 1904, "autor_id": 3}'
 ```
 
-#### Filtrar apenas livros lidos (`GET /livros?lido=true`)
+#### Excluir um livro (`DELETE /livros/13`)
 ```bash
-curl http://localhost:3000/livros?lido=true
+curl -X DELETE http://localhost:3000/livros/13
 ```
 
 ---
@@ -113,7 +143,7 @@ curl http://localhost:3000/livros?lido=true
 ## 🗺️ Roadmap do Projeto
 
 - [x] **Parte 1:** API REST completa em memória + Front-end integrado com `fetch`.
-- [ ] **Parte 2:** Persistência de dados com banco **SQLite** e modularização de rotas com `express.Router`.
+- [x] **Parte 2:** Persistência relacional com **SQLite**, arquitetura **MVC**, rotas modulares com `express.Router` e comunicação via **CORS**.
 - [ ] **Parte 3:** Autenticação e controle de acesso de usuários.
 
 ---
